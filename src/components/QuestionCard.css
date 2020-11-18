@@ -1,0 +1,35 @@
+.question-card-container {
+  padding: 5px 25px;
+  text-align: left;
+  background: #e7e7e7;
+}
+.question-card-question {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.quiz-answers-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 40px 0;
+}
+
+.quiz-answers-button {
+  padding: 15px 32px;
+  margin: 4px 2px;
+
+  font-size: 1em;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  background-color: #d6ffff;
+  border: none;
+}
+
+.selected {
+  color: red;
+}

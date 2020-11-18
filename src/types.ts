@@ -23,10 +23,11 @@ export type UserAnswer = {
 };
 
 export type QuestionCardProps = {
-  answers: string[];
-  callback: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  question: string;
-  questionNumber: number;
   questionTotal: number;
-  userAnswers: UserAnswer | undefined;
+  questionNumber: number;
+  questionType: string;
+  question: string;
+  answers: string[];
+  userAnswer: UserAnswer | undefined;
+  callback: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };

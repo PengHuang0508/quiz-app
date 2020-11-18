@@ -5,7 +5,8 @@ import QuestionCard from './components/QuestionCard';
 // Types
 import { Difficulty, QuestionWithShuffledAnswers, UserAnswer } from './types';
 // Styles
-import { GlobalStyle } from './App.styles';
+import './App.css';
+
 const TOTAL_QUESTIONS = 10;
 
 const App = () => {
@@ -33,6 +34,9 @@ const App = () => {
   let isGameReady = !gameParams.loading && !gameParams.isGameOver;
   let currentQuestion = quiz.questions[quiz.currentQuestionNumber];
   let numberOfAnsweredQuestions = quiz.userAnswers.length;
+  let isNextQuestionAvailable =
+    numberOfAnsweredQuestions === quiz.currentQuestionNumber + 1 &&
+    quiz.currentQuestionNumber !== TOTAL_QUESTIONS - 1;
 
   const startQuiz = async () => {
     setGameParams({
@@ -42,7 +46,7 @@ const App = () => {
 
     const newQuestions = await fetchQuestions(TOTAL_QUESTIONS, Difficulty.EASY);
 
-    setQuiz({ ...quiz, questions: newQuestions });
+    setQuiz({ ...initialQuizState, questions: newQuestions });
 
     setGameParams({
       loading: false,
@@ -56,11 +60,10 @@ const App = () => {
 
       const isCorrect = currentQuestion.correct_answer === userAnswer;
 
+      let score = quiz.score;
+
       if (isCorrect) {
-        setQuiz({
-          ...quiz,
-          score: quiz.score + 1,
-        });
+        score++;
       }
 
       const checkedUserAnswer = {
@@ -73,6 +76,7 @@ const App = () => {
       setQuiz({
         ...quiz,
         userAnswers: [...quiz.userAnswers, checkedUserAnswer],
+        score,
       });
     }
   };
@@ -94,27 +98,21 @@ const App = () => {
   };
 
   return (
-    <React.Fragment>
-      <GlobalStyle />
-      <div className='App'>
-        <h1>QUIZ TIME</h1>
-        {gameParams.isGameOver ||
-        numberOfAnsweredQuestions === TOTAL_QUESTIONS ? (
-          <button className='start' onClick={startQuiz}>
-            START
-          </button>
-        ) : null}
+    <div className='app-wrapper'>
+      <h1 className='app-title'>Quizzz</h1>
+      <p className='quiz-score'>Score: {quiz.score}</p>
 
-        <p className='score'>Score: {quiz.score}</p>
-        {gameParams.loading && <p>Loading Questions...</p>}
+      <div className='quiz-wrapper'>
+        {gameParams.loading && <p>Loading questions...</p>}
 
         {isGameReady && (
           <QuestionCard
-            questionNumber={quiz.currentQuestionNumber + 1}
             questionTotal={TOTAL_QUESTIONS}
+            questionNumber={quiz.currentQuestionNumber + 1}
+            questionType={currentQuestion.type}
             question={currentQuestion.question}
             answers={currentQuestion.answers}
-            userAnswers={
+            userAnswer={
               quiz.userAnswers
                 ? quiz.userAnswers[quiz.currentQuestionNumber]
                 : undefined
@@ -122,15 +120,25 @@ const App = () => {
             callback={checkAnswer}
           />
         )}
-        {isGameReady &&
-          numberOfAnsweredQuestions === quiz.currentQuestionNumber + 1 &&
-          quiz.currentQuestionNumber !== TOTAL_QUESTIONS - 1 && (
-            <button className='next' onClick={nextQuestion}>
-              NEXT
-            </button>
-          )}
       </div>
-    </React.Fragment>
+
+      {gameParams.isGameOver ||
+      numberOfAnsweredQuestions === TOTAL_QUESTIONS ? (
+        <button className='quiz-button quiz-button-start' onClick={startQuiz}>
+          START
+        </button>
+      ) : null}
+
+      {isGameReady && (
+        <button
+          className='quiz-button quiz-button-next'
+          onClick={nextQuestion}
+          disabled={!isNextQuestionAvailable}
+        >
+          NEXT
+        </button>
+      )}
+    </div>
   );
 };
 
